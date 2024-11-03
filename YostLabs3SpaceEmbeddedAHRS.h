@@ -14,6 +14,11 @@
 
 /************************ Enum definitions **************************/
 typedef enum {
+	USE_SPI = 0,
+	USE_UART = 0,
+} CommInterface;
+
+typedef enum {
 	ACCEL_SCALE_2g = 0,
 	ACCEL_SCALE_4g = 1,
 	ACCEL_SCALE_8g = 2,
@@ -294,15 +299,36 @@ typedef struct AHRS_config {
 
 // Overarching struct to hold everything
 typedef struct AHRS {
-	AHRS_data data;
-	AHRS_IO IO;
-	AHRS_config config;
+	AHRS_data* data;
+	AHRS_IO* IO;
+	AHRS_config* config;
+
+	CommInterface interface;
 } AHRS;
 
 /************************ Initialisation Functions **************************/
+HAL_StatusTypeDef AHRS_init(void);
+HAL_StatusTypeDef AHRS_configure(AHRS_config* AHRS_cfg_ptr);
 
 /************************ Data Acquisition Functions **************************/
+HAL_StatusTypeDef AHRS_updateTaredQuaternion(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateTaredEulerAngles(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateTaredRotMat(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateTaredAxisAngle(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateTaredTwoVector(AHRS* ahrs_ptr);
 
+HAL_StatusTypeDef AHRS_updateUntaredQuaternion(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateUntaredEulerAngles(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateUntaredRotMat(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateUntaredAxisAngle(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_updateUntaredTwoVector(AHRS* ahrs_ptr);
+
+HAL_StatusTypeDef AHRS_setStreamingStandard(AHRS* ahrs_ptr);
+HAL_StatusTypeDef AHRS_getStreamedData(AHRS* ahrs_ptr);
 /************************ Low Level Functions **************************/
+HAL_StatusTypeDef AHRS_readUART(AHRS_IO* IO_ptr, AHRSCommand cmd);
+HAL_StatusTypeDef AHRS_writeUART(AHRS_IO* IO_ptr, uint8_t* buffer, uint16_t len);
+HAL_StatusTypeDef AHRS_readSPI(AHRS_IO* IO_ptr, AHRSCommand cmd);
+HAL_StatusTypeDef AHRS_writeSPI(AHRS_IO* IO_ptr, uint8_t* buffer, uint16_t len);
 
 #endif /* INC_YOSTLABS3SPACEEMBEDDEDAHRS_H_ */
